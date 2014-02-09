@@ -41,10 +41,20 @@ namespace Maybe5.SharpSpark.Tests
         public void GivenInvalidAccessTokenExpectErrorInvalidGrant()
         {
             var badClient = new SparkClient("badtoken", "");
-            SparkResult result = badClient.ExecuteFunction("thisdoesnotexist");
+            SparkResult result = badClient.ExecuteFunction("doesn't matter");
 
             Assert.IsTrue(result.HasErrors);
             Assert.AreEqual("invalid_grant", result.ErrorResult.Error);
+        }
+
+        [TestMethod]
+        public void GivenInvalidDeviceIdExpectErrorPermissionDenied()
+        {
+            var badClient = new SparkClient(client.AccessToken, "baseid");
+            SparkResult result = badClient.ExecuteFunction("doesn't matter");
+
+            Assert.IsTrue(result.HasErrors);
+            Assert.AreEqual("Permission Denied", result.ErrorResult.Error);
         }
 
         [Ignore]//This test only passes if the device is offline
