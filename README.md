@@ -26,3 +26,10 @@ SparkReult brewResult = client.ExecuteFunction("brew","202","230");
 decimal temperature = client.GetVariableReturnValue<decimal>("temperature");
 int returnValue = client.ExecuteFunctionReturnValue("brew","202","230");
 ```
+
+Compiling & Getting Tests to Run
+---------
+
+1. Copy app.config.sample in the Tests project to app.config.
+2. Update the access token and device id appsettings
+3. Build, run tests
