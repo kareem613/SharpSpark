@@ -52,7 +52,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="SparkClientTests.cs" />
-    <Compile Include="TinkerUnitTests.cs" />
+    <Compile Include="TinkerClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
