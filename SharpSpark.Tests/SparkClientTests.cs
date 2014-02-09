@@ -37,6 +37,16 @@ namespace Maybe5.SharpSpark.Tests
             Assert.AreEqual("Function not found", result.ErrorResult.Error);
         }
 
+        [TestMethod]
+        public void GivenInvalidAccessTokenExpectErrorInvalidGrant()
+        {
+            var badClient = new SparkClient("badtoken", "");
+            SparkResult result = badClient.ExecuteFunction("thisdoesnotexist");
+
+            Assert.IsTrue(result.HasErrors);
+            Assert.AreEqual("invalid_grant", result.ErrorResult.Error);
+        }
+
         [Ignore]//This test only passes if the device is offline
         [TestMethod]
         public void GivenOfflineDeviceFunctionExpectErrorTimedOut()
