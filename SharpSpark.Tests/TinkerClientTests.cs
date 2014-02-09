@@ -7,7 +7,7 @@ using System.Configuration;
 namespace Maybe5.SharpSpark.Tests
 {
     [TestClass]
-    public class TinkerUnitTests
+    public class TinkerClientTests
     {
         TinkerClient client;
 
