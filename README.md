@@ -32,4 +32,5 @@ Compiling & Getting Tests to Run
 
 1. Copy app.config.sample in the Tests project to app.config.
 2. Update the access token and device id appsettings
-3. Build, run tests
+3. Flash TestFirmware.cpp from the tests project to your device.
+4. Build, run tests

@@ -30,12 +30,12 @@ namespace Maybe5.SharpSpark
             CloudApiClient = new CloudApiHttpClient(accessToken, deviceId);
         }
 
-        public SparkResult GetVariable(string variableName)
+        public SparkVariableResult GetVariable(string variableName)
         {
             return CloudGet(variableName);
         }
 
-        public SparkResult ExecuteFunction(string functionKey, params string[] args)
+        public SparkFunctionResult ExecuteFunction(string functionKey, params string[] args)
         {
             return CloudPost(functionKey, args);
         }
@@ -43,7 +43,7 @@ namespace Maybe5.SharpSpark
         public T GetVariableReturnValue<T>(string variableName)
         {
             var result = GetVariable(variableName);
-            return (T)Convert.ChangeType(result.Return_value.ToString(),typeof(T));
+            return (T)Convert.ChangeType(result.Result.ToString(),typeof(T));
         }
 
         public int ExecuteFunctionReturnValue(string functionKey, params string[] args)
@@ -52,21 +52,21 @@ namespace Maybe5.SharpSpark
             return int.Parse(result.Return_value.ToString());
         }
 
-        private SparkResult CloudGet(string variableName)
+        private SparkVariableResult CloudGet(string variableName)
         {
             var json = CloudApiClient.GetRawResultForGet(variableName);
-            return  JsonConvert.DeserializeObject<SparkResult>(json);
+            return JsonConvert.DeserializeObject<SparkVariableResult>(json);
         }
 
-        private SparkResult CloudPost(string functionKey, string[] args)
+        private SparkFunctionResult CloudPost(string functionKey, string[] args)
         {
             var response = CloudApiClient.GetRawResultForPost(functionKey, args);
             var rawContent = response.Content.ReadAsStringAsync().Result;
             if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
             {
-                return new SparkResult() { ErrorResult = JsonConvert.DeserializeObject<SparkErrorResult>(rawContent) };
+                return new SparkFunctionResult() { ErrorResult = JsonConvert.DeserializeObject<SparkError>(rawContent) };
             }
-            return JsonConvert.DeserializeObject<SparkResult>(rawContent);
+            return JsonConvert.DeserializeObject<SparkFunctionResult>(rawContent);
         }
 
         public SparkDevice GetDevice()

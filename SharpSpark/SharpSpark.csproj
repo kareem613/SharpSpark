@@ -51,9 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudApiHttpClient.cs" />
-    <Compile Include="SparkErrorResult.cs" />
-    <Compile Include="SparkResult.cs" />
+    <Compile Include="CoreInfo.cs" />
+    <Compile Include="SparkError.cs" />
+    <Compile Include="SparkFunctionResult.cs" />
     <Compile Include="SparkDevice.cs" />
+    <Compile Include="SparkVariableResult.cs" />
     <Compile Include="TinkerClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SparkClient.cs" />
