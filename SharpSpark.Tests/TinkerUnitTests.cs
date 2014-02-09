@@ -20,6 +20,17 @@ namespace Maybe5.SharpSpark.Tests
         }
 
         [TestMethod]
+        public void GivenTinkerAppFirmwareClientInfoExpectFunctions()
+        {
+            SparkDevice device = client.GetDevice();
+
+            Assert.IsTrue(device.Functions.Contains("digitalread"), "digitalread function was not found. Ensure Tinker firmware is flashed to the device.");
+            Assert.IsTrue(device.Functions.Contains("digitalwrite"), "digitalwrite function was not found. Ensure Tinker firmware is flashed to the device.");
+            Assert.IsTrue(device.Functions.Contains("analogread"), "analogread function was not found. Ensure Tinker firmware is flashed to the device.");
+            Assert.IsTrue(device.Functions.Contains("analogwrite"), "analogwrite function was not found. Ensure Tinker firmware is flashed to the device.");
+        }
+
+        [TestMethod]
         public void GivenLowPin7WhenDigitalReadExpectPinoutLow()
         {
             var pinValue = client.DigitalRead(TinkerClient.DigitalPins.D7);
