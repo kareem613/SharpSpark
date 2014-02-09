@@ -17,8 +17,8 @@ SparkDevice deviceInfo = client.GetDevice();
 
 **Variables and Functions**
 ```csharp
-SparkResult temperatureResult = client.GetVariable("temperature");
-SparkReult brewResult = client.ExecuteFunction("brew","202","230");
+SparkVariableResult temperatureResult = client.GetVariable("temperature");
+SparkFunctionResult brewResult = client.ExecuteFunction("brew","202","230");
 ```
 
 **Convenience Methods**
