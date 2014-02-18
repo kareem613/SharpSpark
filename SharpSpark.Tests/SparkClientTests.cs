@@ -9,10 +9,7 @@ namespace Maybe5.SharpSpark.Tests
     [TestClass]
     public class SparkClientTests
     {
-        const string TEST_FUNCTION = "returnOne";
-        const string TEST_FUNCTION_VALUE = "1";
-        const string TEST_VARIABLE = "var0";
-        const string TEST_VARIABLE_VALUE = "0";
+       
 
         SparkClient client;
 
@@ -29,7 +26,7 @@ namespace Maybe5.SharpSpark.Tests
         {
             SparkDevice device = client.GetDevice();
 
-            Assert.AreEqual(TEST_FUNCTION, device.Functions.Single(), "Test function was not found. Ensure TestFirmware.cpp is flashed to the device.");
+            Assert.AreEqual("returnOne", device.Functions.Single(), "Test function was not found. Ensure TestFirmware.cpp is flashed to the device.");
         }
 
         [TestMethod]
@@ -37,8 +34,9 @@ namespace Maybe5.SharpSpark.Tests
         {
             SparkDevice device = client.GetDevice();
 
-            Assert.AreEqual(TEST_VARIABLE, device.Variables.Single().Key);
-            Assert.AreEqual("int32", device.Variables.Single().Value);
+            var variable = device.Variables.Where(v=>v.Key == "var0").SingleOrDefault();
+            Assert.IsNotNull(variable);
+            Assert.AreEqual("int32", variable.Value);
         }
 
         [TestMethod]
@@ -54,17 +52,42 @@ namespace Maybe5.SharpSpark.Tests
         [TestMethod]
         public void GivenClientWhenExecuteReturnOneExpect1()
         {
-            SparkFunctionResult result = client.ExecuteFunction(TEST_FUNCTION);
+            SparkFunctionResult result = client.ExecuteFunction("returnOne");
 
-            Assert.AreEqual(TEST_FUNCTION_VALUE, result.Return_value);
+            Assert.AreEqual("1", result.Return_value);
         }
 
         [TestMethod]
         public void GivenClientWhenGetVar0Expect0()
         {
-            SparkVariableResult result = client.GetVariable(TEST_VARIABLE);
+            SparkVariableResult result = client.GetVariable("var0");
 
-            Assert.AreEqual(TEST_VARIABLE_VALUE, result.Result);
+            Assert.AreEqual("0", result.Result);
+        }
+
+        [TestMethod]
+        public void GivenClientWhenGetVarFalseExpectFalse()
+        {
+            bool result = client.GetVariableReturnValue<bool>("varFalse");
+
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public void GivenClientWhenGetVarStringExpectString()
+        {
+            string result = client.GetVariableReturnValue<string>("varA");
+
+            Assert.AreEqual("A", result);
+        }
+
+        [TestMethod]
+        [Ignore]//Waiting for double bug to get resolved. https://community.spark.io/t/strange-results-using-and-returning-doubles-solved/2836/8
+        public void GivenClientWhenGetVarDoubleExpectDouble()
+        {
+            double result = client.GetVariableReturnValue<double>("var1dot1");
+
+            Assert.AreEqual(1.1m, result);
         }
 
         [TestMethod]
