@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace Maybe5.SharpSpark
 {
@@ -75,7 +76,10 @@ namespace Maybe5.SharpSpark
             return JsonConvert.DeserializeObject<SparkDevice>(json);
         }
 
-
-       
+        public List<SparkDevice> GetAllDevices()
+        {
+            var json = CloudApiClient.GetRawResultForGetDevices();
+            return JsonConvert.DeserializeObject<List<SparkDevice>>(json);
+        }
     }
 }

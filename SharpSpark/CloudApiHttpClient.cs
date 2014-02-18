@@ -15,6 +15,16 @@ namespace Maybe5.SharpSpark
             DeviceId = deviceId;
         }
 
+        public string GetRawResultForGetDevices()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = client.GetAsync(String.Format("https://api.spark.io/v1/devices?access_token={0}", AccessToken)).Result;
+                result.EnsureSuccessStatusCode();
+                return result.Content.ReadAsStringAsync().Result;
+            }
+        }
+
         public string GetRawResultForGet(string variableName)
         {
             using (var client = new HttpClient())
