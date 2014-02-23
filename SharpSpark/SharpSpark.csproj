@@ -80,6 +80,9 @@
   <ItemGroup>
     <Compile Include="CloudApiHttpClient.cs" />
     <Compile Include="CoreInfo.cs" />
+    <Compile Include="Exceptions\SparkApiException.cs" />
+    <Compile Include="Exceptions\SparkDeviceException.cs" />
+    <Compile Include="Exceptions\SparkException.cs" />
     <Compile Include="SparkError.cs" />
     <Compile Include="SparkFunctionResult.cs" />
     <Compile Include="SparkDevice.cs" />

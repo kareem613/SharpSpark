@@ -3,14 +3,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Maybe5.SharpSpark;
 using System.Configuration;
 using System.Linq;
+using SharpSpark.Exceptions;
 
 namespace Maybe5.SharpSpark.Tests
 {
     [TestClass]
     public class SparkClientTests
     {
-       
-
         SparkClient client;
 
         [TestInitialize]
@@ -91,42 +90,49 @@ namespace Maybe5.SharpSpark.Tests
         }
 
         [TestMethod]
-        public void GivenInvalidFunctionExpectErrorFunctionNotFound()
+        [ExpectedException(typeof(SparkDeviceException),"Variable not found")]
+        public void GivenInvalidVariableExpectErrorVariableNotFound()
         {
-            SparkFunctionResult result = client.ExecuteFunction("thisdoesnotexist");
-
-            Assert.IsTrue(result.HasErrors);
-            Assert.AreEqual("Function not found", result.ErrorResult.Error);
+            SparkVariableResult result = client.GetVariable("thisdoesnotexist");
         }
 
         [TestMethod]
+        [ExpectedException(typeof(SparkDeviceException), "Function not found")]
+        public void GivenInvalidFunctionExpectErrorFunctionNotFound()
+        {
+            SparkFunctionResult result = client.ExecuteFunction("thisdoesnotexist");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(SparkApiException), "invalid_grant")]
         public void GivenInvalidAccessTokenExpectErrorInvalidGrant()
         {
             var badClient = new SparkClient("badtoken", "");
             SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
-
-            Assert.IsTrue(result.HasErrors);
-            Assert.AreEqual("invalid_grant", result.ErrorResult.Error);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(SparkApiException), "Permission Denied")]
         public void GivenInvalidDeviceIdExpectErrorPermissionDenied()
         {
-            var badClient = new SparkClient(client.AccessToken, "baseid");
+            var badClient = new SparkClient(client.AccessToken, "badid");
             SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
-
-            Assert.IsTrue(result.HasErrors);
-            Assert.AreEqual("Permission Denied", result.ErrorResult.Error);
         }
 
         [Ignore]//This test only passes if the device is offline
         [TestMethod]
+        [ExpectedException(typeof(SparkDeviceException), "Timed out.")]
         public void GivenOfflineDeviceFunctionExpectErrorTimedOut()
         {
-            SparkFunctionResult result = client.ExecuteFunction("digitalRead");
+            SparkFunctionResult result = client.ExecuteFunction("returnOne");
+        }
 
-            Assert.IsTrue(result.HasErrors);
-            Assert.AreEqual("Timed out.", result.ErrorResult.Error);
+        [Ignore]//This test only passes if the device is offline
+        [TestMethod]
+        [ExpectedException(typeof(SparkDeviceException), "Timed out.")]
+        public void GivenOfflineDeviceVariableExpectErrorTimedOut()
+        {
+            SparkVariableResult result = client.GetVariable("var0");
         }
         
     }

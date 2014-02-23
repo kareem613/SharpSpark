@@ -11,6 +11,17 @@ namespace Maybe5.SharpSpark
         public string Cmd { get; set; }
         public string Name { get; set; }
         public string Result { get; set; }
+        public string Error { get; set; }
         public CoreInfo CoreInfo { get; set; }
+
+        public bool HasError
+        {
+            get
+            {
+                return Error != null || ErrorResult != null;
+            }
+        }
+
+        public SparkError ErrorResult { get; set; }
     }
 }

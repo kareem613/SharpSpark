@@ -25,13 +25,12 @@ namespace Maybe5.SharpSpark
             }
         }
 
-        public string GetRawResultForGet(string variableName)
+        public HttpResponseMessage GetRawResultForGet(string variableName)
         {
             using (var client = new HttpClient())
             {
-                var result = client.GetAsync(String.Format("https://api.spark.io/v1/devices/{0}/{1}?access_token={2}", DeviceId, variableName, AccessToken)).Result;
-                result.EnsureSuccessStatusCode();
-                return result.Content.ReadAsStringAsync().Result;
+                return client.GetAsync(String.Format("https://api.spark.io/v1/devices/{0}/{1}?access_token={2}", DeviceId, variableName, AccessToken)).Result;
+                
             }
         }
 
