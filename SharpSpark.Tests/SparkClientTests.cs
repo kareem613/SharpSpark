@@ -150,7 +150,7 @@ namespace Maybe5.SharpSpark.Tests
         public void GivenOfflineDeviceFunctionExpectErrorTimedOut()
         {
             try { 
-                SparkFunctionResult result = client.ExecuteFunction("returnOne");
+                client.ExecuteFunction("returnOne");
             }
             catch (SparkDeviceException spex)
             {
@@ -165,7 +165,22 @@ namespace Maybe5.SharpSpark.Tests
         {
             try
             {
-                SparkVariableResult result = client.GetVariable("var0");
+                client.GetVariable("var0");
+            }
+            catch (SparkDeviceException spex)
+            {
+                Assert.AreEqual("Too slow to respond or offline", spex.Message);
+            }
+        }
+
+        [Ignore]//This test only passes if the device is offline
+        [TestMethod]
+        //[ExpectedException(typeof(SparkDeviceException), "Timed out.")]
+        public void GivenOfflineDeviceGetDeviceExpectErrorTimedOut()
+        {
+            try
+            {
+                client.GetDevice();
             }
             catch (SparkDeviceException spex)
             {

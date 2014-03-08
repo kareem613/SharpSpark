@@ -103,14 +103,22 @@ namespace Maybe5.SharpSpark
 
         public SparkDevice GetDevice()
         {
-            var response = CloudApiClient.GetRawResultForGet(String.Empty);
-            var rawContent = response.Content.ReadAsStringAsync().Result;
-            if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+            try
             {
-                var sparkError = JsonConvert.DeserializeObject<SparkError>(rawContent);
-                throw new SparkApiException(sparkError.Error);
+                var response = CloudApiClient.GetRawResultForGet(String.Empty);
+                var rawContent = response.Content.ReadAsStringAsync().Result;
+                if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+                {
+                    var sparkError = JsonConvert.DeserializeObject<SparkError>(rawContent);
+                    throw new SparkApiException(sparkError.Error);
+                }
+                return JsonConvert.DeserializeObject<SparkDevice>(rawContent);
             }
-            return JsonConvert.DeserializeObject<SparkDevice>(rawContent);
+            catch (AggregateException)
+            {
+                var sparkError = new SparkError() { Error = "Too slow to respond or offline" };
+                throw new SparkDeviceException(sparkError.Error, sparkError);
+            }
         }
 
         public List<SparkDevice> GetAllDevices()
