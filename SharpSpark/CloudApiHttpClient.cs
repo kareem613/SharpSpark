@@ -6,6 +6,7 @@ namespace Maybe5.SharpSpark
 {
     class CloudApiHttpClient
     {
+        const int TIMEOUT_SECONDS = 10;
         public string AccessToken { get; private set; }
         public string DeviceId { get; private set; }
 
@@ -17,7 +18,7 @@ namespace Maybe5.SharpSpark
 
         public string GetRawResultForGetDevices()
         {
-            using (var client = new HttpClient())
+            using (var client = new HttpClient() { Timeout = new TimeSpan(0, 0, TIMEOUT_SECONDS) })
             {
                 var result = client.GetAsync(String.Format("https://api.spark.io/v1/devices?access_token={0}", AccessToken)).Result;
                 result.EnsureSuccessStatusCode();
@@ -27,7 +28,7 @@ namespace Maybe5.SharpSpark
 
         public HttpResponseMessage GetRawResultForGet(string variableName)
         {
-            using (var client = new HttpClient())
+            using (var client = new HttpClient() { Timeout = new TimeSpan(0, 0, TIMEOUT_SECONDS) })
             {
                 return client.GetAsync(String.Format("https://api.spark.io/v1/devices/{0}/{1}?access_token={2}", DeviceId, variableName, AccessToken)).Result;
                 
@@ -37,7 +38,7 @@ namespace Maybe5.SharpSpark
 
         public HttpResponseMessage GetRawResultForPost(string functionKey, string[] args)
         {
-            using (var client = new HttpClient())
+            using (var client = new HttpClient() { Timeout = new TimeSpan(0, 0, TIMEOUT_SECONDS) })
             {
                 var content = new FormUrlEncodedContent(new[] 
                 {

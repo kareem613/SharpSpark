@@ -26,7 +26,7 @@ namespace Maybe5.SharpSpark
                 return CloudApiClient.DeviceId;
             }
         }
-        
+
         private CloudApiHttpClient CloudApiClient { get; set; }
 
         public SparkClient(string accessToken, string deviceId)
@@ -37,30 +37,19 @@ namespace Maybe5.SharpSpark
         public SparkVariableResult GetVariable(string variableName)
         {
             var result = CloudGet(variableName);
-            if(result.HasError)
-            {
-                throw new SparkDeviceException(result.Error,result);
-            }
             return result;
         }
 
         public SparkFunctionResult ExecuteFunction(string functionKey, params string[] args)
         {
             var result = CloudPost(functionKey, args);
-            if (result.HasErrors)
-            {
-                if(API_ERROR_MESSAGES.Contains(result.ErrorResult.Error))
-                    throw new SparkApiException(result.ErrorResult.Error, result.ErrorResult);
-
-                throw new SparkDeviceException(result.ErrorResult.Error, result.ErrorResult);
-            }
             return result;
         }
 
         public T GetVariableReturnValue<T>(string variableName)
         {
             var result = GetVariable(variableName);
-            return (T)Convert.ChangeType(result.Result.ToString(),typeof(T));
+            return (T)Convert.ChangeType(result.Result.ToString(), typeof(T));
         }
 
         public int ExecuteFunctionReturnValue(string functionKey, params string[] args)
@@ -71,24 +60,45 @@ namespace Maybe5.SharpSpark
 
         private SparkVariableResult CloudGet(string variableName)
         {
-            var response = CloudApiClient.GetRawResultForGet(variableName);
-            var rawContent = response.Content.ReadAsStringAsync().Result;
-            if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+            try
             {
-                return new SparkVariableResult() { ErrorResult = JsonConvert.DeserializeObject<SparkError>(rawContent) };
+                var response = CloudApiClient.GetRawResultForGet(variableName);
+                var rawContent = response.Content.ReadAsStringAsync().Result;
+                if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+                {
+                    var sparkError = JsonConvert.DeserializeObject<SparkError>(rawContent);
+                    throw new SparkDeviceException(sparkError.Error, sparkError);
+                }
+                return JsonConvert.DeserializeObject<SparkVariableResult>(rawContent);
             }
-            return JsonConvert.DeserializeObject<SparkVariableResult>(rawContent);
+            catch (AggregateException)
+            {
+                var sparkError = new SparkError() { Error = "Too slow to respond or offline" };
+                throw new SparkDeviceException(sparkError.Error, sparkError);
+            }
         }
 
         private SparkFunctionResult CloudPost(string functionKey, string[] args)
         {
-            var response = CloudApiClient.GetRawResultForPost(functionKey, args);
-            var rawContent = response.Content.ReadAsStringAsync().Result;
-            if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+            try
             {
-                return new SparkFunctionResult() { ErrorResult = JsonConvert.DeserializeObject<SparkError>(rawContent) };
+                var response = CloudApiClient.GetRawResultForPost(functionKey, args);
+                var rawContent = response.Content.ReadAsStringAsync().Result;
+                if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
+                {
+                    var sparkError = JsonConvert.DeserializeObject<SparkError>(rawContent);
+                    if (API_ERROR_MESSAGES.Contains(sparkError.Error))
+                        throw new SparkApiException(sparkError.Error, sparkError);
+
+                    throw new SparkDeviceException(sparkError.Error, sparkError);
+                }
+                return JsonConvert.DeserializeObject<SparkFunctionResult>(rawContent);
             }
-            return JsonConvert.DeserializeObject<SparkFunctionResult>(rawContent);
+            catch (AggregateException)
+            {
+                var sparkError = new SparkError() { Error = "Too slow to respond or offline" };
+                throw new SparkDeviceException(sparkError.Error, sparkError);
+            }
         }
 
         public SparkDevice GetDevice()
@@ -97,7 +107,7 @@ namespace Maybe5.SharpSpark
             var rawContent = response.Content.ReadAsStringAsync().Result;
             if (!response.IsSuccessStatusCode || rawContent.StartsWith("{\n  \"error\":"))
             {
-                var sparkError =  JsonConvert.DeserializeObject<SparkError>(rawContent);
+                var sparkError = JsonConvert.DeserializeObject<SparkError>(rawContent);
                 throw new SparkApiException(sparkError.Error);
             }
             return JsonConvert.DeserializeObject<SparkDevice>(rawContent);

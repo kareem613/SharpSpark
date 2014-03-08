@@ -90,49 +90,87 @@ namespace Maybe5.SharpSpark.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SparkDeviceException),"Variable not found")]
+        //[ExpectedException(typeof(SparkDeviceException),"Variable not found")]
         public void GivenInvalidVariableExpectErrorVariableNotFound()
         {
-            SparkVariableResult result = client.GetVariable("thisdoesnotexist");
+            try{
+                SparkVariableResult result = client.GetVariable("thisdoesnotexist");
+            }
+            catch (SparkDeviceException spex)
+            {
+                Assert.AreEqual("Variable not found", spex.Message);
+            }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SparkDeviceException), "Function not found")]
+        //[ExpectedException(typeof(SparkDeviceException), "Function not found")]
         public void GivenInvalidFunctionExpectErrorFunctionNotFound()
         {
-            SparkFunctionResult result = client.ExecuteFunction("thisdoesnotexist");
+            try{
+                SparkFunctionResult result = client.ExecuteFunction("thisdoesnotexist");
+            }
+            catch (SparkDeviceException spex)
+            {
+                Assert.AreEqual("Function not found", spex.Message);
+            }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SparkApiException), "invalid_grant")]
+        //[ExpectedException(typeof(SparkApiException), "invalid_grant")]
         public void GivenInvalidAccessTokenExpectErrorInvalidGrant()
         {
             var badClient = new SparkClient("badtoken", "");
-            SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
+            try
+            {
+                SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
+            }
+            catch (SparkApiException spex)
+            {
+                Assert.AreEqual("invalid_grant", spex.Message);
+            }
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SparkApiException), "Permission Denied")]
+        //[ExpectedException(typeof(SparkApiException), "Permission Denied")]
         public void GivenInvalidDeviceIdExpectErrorPermissionDenied()
         {
             var badClient = new SparkClient(client.AccessToken, "badid");
-            SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
+            try { 
+                SparkFunctionResult result = badClient.ExecuteFunction("doesn't matter");
+            }
+            catch (SparkApiException spex)
+            {
+                Assert.AreEqual("Permission Denied", spex.Message);
+            }
         }
 
         [Ignore]//This test only passes if the device is offline
         [TestMethod]
-        [ExpectedException(typeof(SparkDeviceException), "Timed out.")]
+        //[ExpectedException(typeof(SparkDeviceException), "Timed out.")]
         public void GivenOfflineDeviceFunctionExpectErrorTimedOut()
         {
-            SparkFunctionResult result = client.ExecuteFunction("returnOne");
+            try { 
+                SparkFunctionResult result = client.ExecuteFunction("returnOne");
+            }
+            catch (SparkDeviceException spex)
+            {
+                Assert.AreEqual("Too slow to respond or offline", spex.Message);
+            }
         }
 
         [Ignore]//This test only passes if the device is offline
         [TestMethod]
-        [ExpectedException(typeof(SparkDeviceException), "Timed out.")]
+        //[ExpectedException(typeof(SparkDeviceException), "Timed out.")]
         public void GivenOfflineDeviceVariableExpectErrorTimedOut()
         {
-            SparkVariableResult result = client.GetVariable("var0");
+            try
+            {
+                SparkVariableResult result = client.GetVariable("var0");
+            }
+            catch (SparkDeviceException spex)
+            {
+                Assert.AreEqual("Too slow to respond or offline", spex.Message);
+            }
         }
         
     }
